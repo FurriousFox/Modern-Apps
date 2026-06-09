@@ -9,6 +9,7 @@ import com.vayunmathur.contacts.util.ContactViewModel
 import com.vayunmathur.contacts.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Composable
 fun EventDeleteConfirmDialog(
@@ -34,12 +35,14 @@ fun EventDeleteConfirmDialog(
         },
         confirmButton = {
             TextButton(onClick = {
-                scope.launch(Dispatchers.IO) {
+                scope.launch {
                     viewModel.getContact(contactId)?.let { contact ->
-                        viewModel.deleteContact(contact)
+                        withContext(Dispatchers.IO) {
+                            viewModel.deleteContact(contact)
+                        }
                     }
+                    onConfirm()
                 }
-                onConfirm()
             }) {
                 Text(stringResource(R.string.delete))
             }

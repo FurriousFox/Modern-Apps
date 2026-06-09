@@ -120,10 +120,16 @@ fun ContactList(
             text = { Text(stringResource(R.string.delete_selected_contacts_confirm, selectedIds.size)) },
             confirmButton = {
                 TextButton(onClick = {
-                    val toDelete = contacts.filter { it.id in selectedIds }
-                    toDelete.forEach { viewModel.deleteContact(it) }
-                    selectedIds.clear()
-                    showDeleteConfirmation = false
+                    scope.launch {
+                        val toDelete = contacts.filter { it.id in selectedIds }
+                        toDelete.forEach { 
+                            withContext(Dispatchers.IO) {
+                                viewModel.deleteContact(it)
+                            }
+                        }
+                        selectedIds.clear()
+                        showDeleteConfirmation = false
+                    }
                 }) {
                     Text(stringResource(R.string.delete))
                 }

@@ -273,14 +273,13 @@ class ContactViewModel(application: Application) : AndroidViewModel(application)
         return contacts.value.find { it.id == contactId }
     }
 
-    fun deleteContact(contact: com.vayunmathur.contacts.data.Contact) {
-        viewModelScope.launch(Dispatchers.IO) {
-            com.vayunmathur.contacts.data.Contact.delete(getApplication(), contact)
-            if (isCalendarSyncEnabled.value) {
-                CalendarSyncHelper.syncContact(getApplication(), contact.copy(details = contact.details.copy(dates = emptyList())))
-            }
-            contactDao.deleteContact(contact.id)
+    suspend fun deleteContact(contact: com.vayunmathur.contacts.data.Contact) {
+        com.vayunmathur.contacts.data.Contact.delete(getApplication(), contact)
+        if (isCalendarSyncEnabled.value) {
+            CalendarSyncHelper.syncContact(getApplication(), contact.copy(details = contact.details.copy(dates = emptyList())))
         }
+        contactDao.deleteContact(contact.id)
+        contactDao.deleteSearchEntity(contact.id)
     }
 
     // Groups Management

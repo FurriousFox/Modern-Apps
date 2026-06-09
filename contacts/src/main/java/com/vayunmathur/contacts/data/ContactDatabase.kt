@@ -31,6 +31,9 @@ interface ContactDao {
     @Query("DELETE FROM contacts WHERE id IN (:ids)")
     suspend fun deleteContacts(ids: List<Long>)
 
+    @Query("DELETE FROM contacts_search WHERE rowid = :id")
+    suspend fun deleteSearchEntity(id: Long)
+
     @Query("DELETE FROM contacts")
     suspend fun deleteAll()
 
