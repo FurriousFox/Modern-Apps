@@ -72,7 +72,8 @@ class ContactViewModel(application: Application) : AndroidViewModel(application)
             if (query.isBlank()) {
                 contactDao.getContactsFlow()
             } else {
-                contactDao.search("*$query*")
+                val normalizedQuery = query.normalizeForSearch()
+                contactDao.search("*$normalizedQuery*")
             }
         },
         hiddenAccounts
@@ -170,12 +171,12 @@ class ContactViewModel(application: Application) : AndroidViewModel(application)
                 val searchEntities = systemContacts.map { contact ->
                     ContactSearchEntity(
                         rowid = contact.id,
-                        displayName = contact.name.value,
-                        nickname = contact.nickname.value,
-                        phoneNumbers = contact.details.phoneNumbers.joinToString(" ") { it.number },
-                        emails = contact.details.emails.joinToString(" ") { it.address },
-                        notes = contact.details.notes.joinToString(" ") { it.content },
-                        organization = contact.details.orgs.joinToString(" ") { it.company }
+                        displayName = contact.name.value.normalizeForSearch(),
+                        nickname = contact.nickname.value.normalizeForSearch(),
+                        phoneNumbers = contact.details.phoneNumbers.joinToString(" ") { it.number }.normalizeForSearch(),
+                        emails = contact.details.emails.joinToString(" ") { it.address }.normalizeForSearch(),
+                        notes = contact.details.notes.joinToString(" ") { it.content }.normalizeForSearch(),
+                        organization = contact.details.orgs.joinToString(" ") { it.company }.normalizeForSearch()
                     )
                 }
                 

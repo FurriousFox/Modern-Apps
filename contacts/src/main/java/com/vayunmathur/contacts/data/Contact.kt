@@ -8,6 +8,7 @@ import android.provider.ContactsContract.Profile
 import android.util.Log
 import androidx.core.database.getBlobOrNull
 import androidx.core.database.getStringOrNull
+import java.text.Normalizer
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format
@@ -17,6 +18,18 @@ import kotlinx.serialization.Serializable
 import kotlin.io.encoding.Base64
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
+
+fun String.normalizeForSearch(): String {
+    // NFKD: Compatibility decomposition (handles characters like é -> e + ´)
+    // Then remove only the combining diacritical marks (U+0300 to U+036F)
+    // This preserves the base characters while removing accents/diacritics
+    return Normalizer.normalize(this, Normalizer.Form.NFKD)
+        .filterNot { it in '\u0300'..'\u036F' }
+}
+
+fun String?.normalizeForSearch(): String {
+    return this?.normalizeForSearch() ?: ""
+}
 
 val LocalDate.hasYear: Boolean get() = year >= 1901
 
