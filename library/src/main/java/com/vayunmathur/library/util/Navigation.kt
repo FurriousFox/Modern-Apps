@@ -62,7 +62,9 @@ class NavBackStack<T: NavKey>(initial: Array<out T>) {
     val backStack: List<T> = backend
 
     fun pop() {
-        backend.removeAt(backend.lastIndex)
+        if (backend.size > 1) {
+            backend.removeAt(backend.lastIndex)
+        }
     }
 
     fun set(index: Int, value: T) {
